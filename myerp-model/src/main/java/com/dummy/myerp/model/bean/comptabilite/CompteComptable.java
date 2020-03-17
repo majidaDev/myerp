@@ -88,10 +88,12 @@ public class CompteComptable {
      */
     public static CompteComptable getByNumero(List<? extends CompteComptable> pList, Integer pNumero) {
         CompteComptable vRetour = null;
-        for (CompteComptable vBean : pList) {
-            if (vBean != null && Objects.equals(vBean.getNumero(), pNumero)) {
-                vRetour = vBean;
-                break;
+        if(pList != null) { //add a test to know if pList is not null
+            for (CompteComptable vBean : pList) {
+                if (vBean != null && Objects.equals(vBean.getNumero(), pNumero)) {
+                    vRetour = vBean;
+                    break;
+                }
             }
         }
         return vRetour;
