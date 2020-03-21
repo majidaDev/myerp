@@ -1,13 +1,9 @@
-/target
-/*-*/target
-
-/.settings
-/.project
-/*-*/.project
-/*-*/.settings
-/*-*/.classpath
-/*-*/.checkstyle
-/*-*/.springBeans
-
-/.idea
-*.iml
+/.idea/misc.xml
+/.idea/modules.xml	/.idea/modules.xml
+/.idea/vcs.xml	/.idea/vcs.xml
+/myerp-business/target/classes/com/dummy/myerp/business/applicationContext.xml
+/myerp-consumer/target/classes/com/dummy/myerp/consumer/applicationContext.xml
+/myerp-business/target/test-classes/com/dummy/myerp/testbusiness/business/bootstrapContext.xml
+/myerp-business/target/test-classes/log4j2.xml
+/myerp-consumer/target/classes/com/dummy/myerp/consumer/sqlContext.xml
+/myerp-business/target/classes/com/dummy/myerp/business/transactionContext.xml
