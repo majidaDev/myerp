@@ -24,7 +24,9 @@ public class EcritureComptable {
     /** Journal comptable */
     @NotNull private JournalComptable journal;
     /** The Reference. */
-    @Pattern(regexp = "\\d{1,5}-\\d{4}/\\d{5}")
+    // update of the regex : (old \d{1,5}-\d{4}/\d{5})
+    // change for [A-Z] code and add '/' separation between year and n° of line
+    @Pattern(regexp = "[A-Z]{2}-\\d{4}[/]\\d{5}")
     private String reference;
     /** The Date. */
     @NotNull private Date date;
