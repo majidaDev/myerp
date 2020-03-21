@@ -1,5 +1,5 @@
 package com.dummy.myerp.model.bean.comptabilite;
-
+import javax.validation.constraints.NotNull;
 
 /**
  * Bean représentant une séquence pour les références d'écriture comptable
@@ -11,6 +11,8 @@ public class SequenceEcritureComptable {
     private Integer annee;
     /** La dernière valeur utilisée */
     private Integer derniereValeur;
+    /** Journal comptable */
+    private String journalCode;
 
     // ==================== Constructeurs ====================
     /**
@@ -25,7 +27,8 @@ public class SequenceEcritureComptable {
      * @param pAnnee -
      * @param pDerniereValeur -
      */
-    public SequenceEcritureComptable(Integer pAnnee, Integer pDerniereValeur) {
+    public SequenceEcritureComptable(String pJournalCode, Integer pAnnee, Integer pDerniereValeur) {
+        journalCode = pJournalCode;
         annee = pAnnee;
         derniereValeur = pDerniereValeur;
     }
@@ -45,7 +48,12 @@ public class SequenceEcritureComptable {
         derniereValeur = pDerniereValeur;
     }
 
-
+    public String getJournalCode() {
+        return journalCode;
+    }
+    public void setJournalCode(String journalCode) {
+        this.journalCode = journalCode;
+    }
     // ==================== Méthodes ====================
     @Override
     public String toString() {

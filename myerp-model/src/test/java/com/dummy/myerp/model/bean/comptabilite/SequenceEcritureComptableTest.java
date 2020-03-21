@@ -13,11 +13,12 @@ public class SequenceEcritureComptableTest {
     @Before
     public void setUp() {
         sequenceEcritureComptable = new SequenceEcritureComptable();
+        sequenceEcritureComptable.setJournalCode("HA");
         sequenceEcritureComptable.setAnnee(2019);
         sequenceEcritureComptable.setDerniereValeur(1000);
 
         //with constructor
-        sequenceEcritureComptable = new SequenceEcritureComptable(2019, 1000);
+        sequenceEcritureComptable = new SequenceEcritureComptable("HA",2019, 1000);
     }
 
     @Test

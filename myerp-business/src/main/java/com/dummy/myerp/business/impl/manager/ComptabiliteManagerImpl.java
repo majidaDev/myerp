@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import com.dummy.myerp.model.bean.comptabilite.*;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.TransactionStatus;
@@ -76,6 +78,49 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
                 4.  Enregistrer (insert/update) la valeur de la séquence en persitance
                     (table sequence_ecriture_comptable)
          */
+        Date datePEcritureComptable = pEcritureComptable.getDate();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(datePEcritureComptable);
+        /*1.  Remonter depuis la persitance la dernière valeur de la séquence du journal pour l'année de l'écriture
+        (table sequence_ecriture_comptable) */
+        Stream<SequenceEcritureComptable> streamSeq = pEcritureComptable.getJournal().getSequenceEcritureComptables().stream().filter(sequence -> sequence.getAnnee() == calendar.get(Calendar.YEAR));
+        List<SequenceEcritureComptable> listSeq = streamSeq.collect(Collectors.toList());
+        if (!listSeq.isEmpty()) {
+            listSeq.forEach(sequenceEcritureComptable -> {
+                /*  2.  * S'il n'y a aucun enregistrement pour le journal pour l'année concernée :
+                          Utiliser le numéro 1. */
+                int pDerniereValeur = sequenceEcritureComptable.getDerniereValeur();
+                int newDerniereValeur;
+                newDerniereValeur = derniereValeurSequenceEcritureComptable(pDerniereValeur);
+
+                // 3.  Mettre à jour la référence de l'écriture avec la référence calculée (RG_Compta_5)
+                String finalRef = getNewReference(pEcritureComptable.getJournal().getCode(), Integer.toString(calendar.get(Calendar.YEAR)), String.format("%05d", newDerniereValeur));
+                pEcritureComptable.setReference(finalRef);
+
+                /* 4.  Enregistrer (insert/update) la valeur de la séquence en persitance (table sequence_ecriture_comptable) */
+                sequenceEcritureComptable.setDerniereValeur(newDerniereValeur);
+                try {
+                    updateSequenceEcritureComptable(sequenceEcritureComptable);
+                } catch (FunctionalException e) {
+                    e.printStackTrace();
+                }
+            });
+        } else {
+            // 3.  Mettre à jour la référence de l'écriture avec la référence calculée (RG_Compta_5)
+            String finalRef = getNewReference(pEcritureComptable.getJournal().getCode(), Integer.toString(calendar.get(Calendar.YEAR)), String.format("%05d", 1));
+            pEcritureComptable.setReference(finalRef);
+
+            /* 4.  Enregistrer (insert/update) la valeur de la séquence en persitance (table sequence_ecriture_comptable) */
+            SequenceEcritureComptable newSeq = new SequenceEcritureComptable();
+            newSeq.setJournalCode(pEcritureComptable.getJournal().getCode());
+            newSeq.setAnnee(calendar.get(Calendar.YEAR));
+            newSeq.setDerniereValeur(1);
+            try {
+                insertSequenceEcritureComptable(newSeq);
+            } catch (FunctionalException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -139,9 +184,13 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
         Date datePEcritureComptable = pEcritureComptable.getDate();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(datePEcritureComptable);
-        if (pEcritureComptable.getJournal().getCode() != pEcritureComptable.getReference().substring(0,1)) {
+        String pAnnee  = Integer.toString(calendar.get(Calendar.YEAR));
+        String pAnneRef = StringUtils.substring(pEcritureComptable.getReference(), 3, 7);
+        String pCode = pEcritureComptable.getJournal().getCode();
+        String pCodeRef = StringUtils.substring(pEcritureComptable.getReference(), 0, 2);
+        if (!pCode.equals(pCodeRef)) {
             throw new FunctionalException("Le code journal dans la référence ne correspond pas au code journal de l'écriture.");
-        } else if (Integer.toString(calendar.get(Calendar.YEAR)) != pEcritureComptable.getReference().substring(3,6)) {
+        } else if (!pAnnee.equals(pAnneRef)) {
             throw new FunctionalException("L'année dans la référence ne correspond pas à l'année de l'écriture.");
         }
     }
@@ -219,5 +268,51 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
         } finally {
             getTransactionManager().rollbackMyERP(vTS);
         }
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void insertSequenceEcritureComptable(SequenceEcritureComptable pSequenceEcritureComptable) throws FunctionalException {
+        TransactionStatus vTS = getTransactionManager().beginTransactionMyERP();
+        try {
+            getDaoProxy().getComptabiliteDao().insertSequenceEcritureComptable(pSequenceEcritureComptable);
+            getTransactionManager().commitMyERP(vTS);
+            vTS = null;
+        } finally {
+            getTransactionManager().rollbackMyERP(vTS);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateSequenceEcritureComptable(SequenceEcritureComptable pSequenceEcritureComptable) throws FunctionalException {
+        TransactionStatus vTS = getTransactionManager().beginTransactionMyERP();
+        try {
+            getDaoProxy().getComptabiliteDao().updateSequenceEcritureComptable(pSequenceEcritureComptable);
+            getTransactionManager().commitMyERP(vTS);
+            vTS = null;
+        } finally {
+            getTransactionManager().rollbackMyERP(vTS);
+        }
+    }
+
+    public int derniereValeurSequenceEcritureComptable(int derniereValeur) {
+        int newDerniereValeur;
+
+        if (derniereValeur == 0) {
+            newDerniereValeur = 1;
+        } else {
+            newDerniereValeur = derniereValeur + 1;
+        }
+
+        return newDerniereValeur;
+    }
+
+    public String getNewReference(String ref, String year, String seqDerniereValeur) {
+        String newRef = ref + "-" + year + "/" + seqDerniereValeur;
+        return newRef;
     }
 }
