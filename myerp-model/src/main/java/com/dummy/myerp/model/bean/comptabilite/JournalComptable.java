@@ -80,6 +80,7 @@ public class JournalComptable {
      */
     public static JournalComptable getByCode(List<? extends JournalComptable> pList, String pCode) {
         JournalComptable vRetour = null;
+        if(pList == null) { return vRetour; } // test if pList is null (non vide)
         for (JournalComptable vBean : pList) {
             if (vBean != null && Objects.equals(vBean.getCode(), pCode)) {
                 vRetour = vBean;
