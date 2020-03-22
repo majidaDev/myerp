@@ -14,7 +14,7 @@ public class LigneEcritureComptableTest {
 
     private LigneEcritureComptable ligneEcritureComptable;
 
-    private LigneEcritureComptable createLigne(Integer pCompteComptableNumero, String pDebit, String pCredit) {
+    private LigneEcritureComptable createLigne(CompteComptable pC, Integer pCompteComptableNumero, String pDebit, String pCredit) {
         BigDecimal vDebit = pDebit == null ? null : new BigDecimal(pDebit);
         BigDecimal vCredit = pCredit == null ? null : new BigDecimal(pCredit);
         String vLibelle = ObjectUtils.defaultIfNull(vDebit, BigDecimal.ZERO)
@@ -29,7 +29,12 @@ public class LigneEcritureComptableTest {
 
     @Before
     public void setUp() {
-        ligneEcritureComptable = this.createLigne(1, "200", null);
+        CompteComptable c = new CompteComptable();
+        c.setLibelle("Fournisseurs");
+        c.setNumero(401);
+        LigneEcritureComptable l = new LigneEcritureComptable(c, "String pLibelle",
+                new BigDecimal(2.00), new BigDecimal(2.00));
+        ligneEcritureComptable = this.createLigne(c,1, "200", null);
     }
 
     @Test

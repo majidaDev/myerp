@@ -23,10 +23,14 @@ public class SequenceEcritureComptableTest {
 
     @Test
     public void testToString() {
+
+        //with constructor
+        sequenceEcritureComptable = new SequenceEcritureComptable("HA",2019, 1000);
         StringBuilder vStB = new StringBuilder("SequenceEcritureComptable");
         String vSEP = ", ";
         vStB.append("{")
                 .append("annee=").append(sequenceEcritureComptable.getAnnee())
+                .append("journalCode=").append(sequenceEcritureComptable.getJournalCode())
                 .append(vSEP).append("derniereValeur=").append(sequenceEcritureComptable.getDerniereValeur())
                 .append("}");
         Assert.assertEquals(vStB.toString(),sequenceEcritureComptable.toString());

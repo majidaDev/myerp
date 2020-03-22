@@ -25,8 +25,7 @@ public class JournalComptable {
     private String libelle;
     /** La liste des lignes sequences ecriture comptable. */
     @Valid
-    private final List<SequenceEcritureComptable> sequenceEcritureComptables = new ArrayList<>();
-
+    private List<SequenceEcritureComptable> sequenceEcritureComptables = new ArrayList<>();
     // ==================== Constructeurs ====================
     /**
      * Instantiates a new Journal comptable.
@@ -45,7 +44,11 @@ public class JournalComptable {
         libelle = pLibelle;
     }
 
-
+    public JournalComptable(String pCode, String pLibelle, List<SequenceEcritureComptable> sequenceEcritureComptable) {
+        code = pCode;
+        libelle = pLibelle;
+        sequenceEcritureComptables = sequenceEcritureComptable;
+    }
     // ==================== Getters/Setters ====================
     public String getCode() {
         return code;

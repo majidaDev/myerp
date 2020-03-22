@@ -15,7 +15,8 @@
         <constructor-arg ref="TransactionManager"/>
     </bean>
 
-
+    <!-- add DaoProxy -->
+    <bean id="DaoProxy" class="com.dummy.myerp.consumer.dao.impl.DaoProxyImpl"/>
     <!-- ========== Transaction Managers ========== -->
     <import resource="transactionContext.xml"/>
 </beans>
