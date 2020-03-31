@@ -53,11 +53,6 @@ public class ComptabiliteManagerImplTest extends BusinessTestCase {
         sequenceEcritureComptable2 = new SequenceEcritureComptable();
     }
 
-    @After
-    public void tearDown() throws Exception {
-        sequenceEcritureComptable2 = null;
-        vEcritureComptable = null;
-    }
 
     /*-- UNIT TEST : addReference --*/
     @Test

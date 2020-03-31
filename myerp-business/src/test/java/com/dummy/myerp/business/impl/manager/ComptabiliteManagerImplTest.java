@@ -46,11 +46,7 @@ public class ComptabiliteManagerImplTest {
                                                                                  null));
         sequenceEcritureComptable2 = new SequenceEcritureComptable();
     }
-    @After
-    public void tearDown() throws Exception {
-        sequenceEcritureComptable2 = null;
-        vEcritureComptable = null;
-    }
+
     /*-- UNIT TEST : checkEcritureComptableUnit --*/
      @Test
      public void checkEcritureComptableUnit() throws Exception {
@@ -91,7 +87,7 @@ public class ComptabiliteManagerImplTest {
                                                                                  null, null,
                                                                                  null));
         vEcritureComptable.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
-                                                                                 null, null,
+                                                                                 null, null,null));
 
                 expectedException.expect(FunctionalException.class);
         expectedException.expectMessage(
@@ -104,7 +100,7 @@ public class ComptabiliteManagerImplTest {
         vEcritureComptable.setReference("BK-2020/00001");
         expectedException.expect(FunctionalException.class);
         expectedException.expectMessage(
-                "Le code journal dans la référence ne correspond pas au code journal de l'écriture.");                                                                     null));
+                "Le code journal dans la référence ne correspond pas au code journal de l'écriture.");
         manager.checkEcritureComptableUnit(vEcritureComptable);
     }
     @Test
