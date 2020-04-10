@@ -25,8 +25,8 @@ public class EcritureComptableTest {
         return vRetour;
     }
 
-    @Before
-     public void init() {
+    @Before // avant chaque lancement du test
+    public void init() {
         vEcriture = new EcritureComptable();
         vEcriture.setId(1);
         vEcriture.setJournal(new JournalComptable());
