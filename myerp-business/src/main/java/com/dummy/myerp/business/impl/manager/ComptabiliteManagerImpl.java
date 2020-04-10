@@ -78,26 +78,21 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
                 4.  Enregistrer (insert/update) la valeur de la séquence en persitance
                     (table sequence_ecriture_comptable)
          */
-        //Check si l'écriture compteble est aux formes
-        checkEcritureComptable(pEcritureComptable);
         Date datePEcritureComptable = pEcritureComptable.getDate();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(datePEcritureComptable);
+        String finalRef;
+        int newDerniereValeur = 0;
         /*1.  Remonter depuis la persitance la dernière valeur de la séquence du journal pour l'année de l'écriture
         (table sequence_ecriture_comptable) */
         Stream<SequenceEcritureComptable> streamSeq = pEcritureComptable.getJournal().getSequenceEcritureComptables().stream().filter(sequence -> sequence.getAnnee() == calendar.get(Calendar.YEAR));
         List<SequenceEcritureComptable> listSeq = streamSeq.collect(Collectors.toList());
         if (!listSeq.isEmpty()) {
-            listSeq.forEach(sequenceEcritureComptable -> {
+            for (SequenceEcritureComptable sequenceEcritureComptable : listSeq){
                 /*  2.  * S'il n'y a aucun enregistrement pour le journal pour l'année concernée :
                           Utiliser le numéro 1. */
                 int pDerniereValeur = sequenceEcritureComptable.getDerniereValeur();
-                int newDerniereValeur;
                 newDerniereValeur = derniereValeurSequenceEcritureComptable(pDerniereValeur);
-
-                // 3.  Mettre à jour la référence de l'écriture avec la référence calculée (RG_Compta_5)
-                String finalRef = getNewReference(pEcritureComptable.getJournal().getCode(), Integer.toString(calendar.get(Calendar.YEAR)), String.format("%05d", newDerniereValeur));
-                pEcritureComptable.setReference(finalRef);
 
                 /* 4.  Enregistrer (insert/update) la valeur de la séquence en persitance (table sequence_ecriture_comptable) */
                 sequenceEcritureComptable.setDerniereValeur(newDerniereValeur);
@@ -106,11 +101,10 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
                 } catch (FunctionalException e) {
                     e.printStackTrace();
                 }
-            });
+            }
         } else {
-            // 3.  Mettre à jour la référence de l'écriture avec la référence calculée (RG_Compta_5)
-            String finalRef = getNewReference(pEcritureComptable.getJournal().getCode(), Integer.toString(calendar.get(Calendar.YEAR)), String.format("%05d", 1));
-            pEcritureComptable.setReference(finalRef);
+             /*  2.  * S'il n'y a aucun enregistrement pour le journal pour l'année concernée : Utiliser le numéro 1. */
+            newDerniereValeur = 1;
 
             /* 4.  Enregistrer (insert/update) la valeur de la séquence en persitance (table sequence_ecriture_comptable) */
             SequenceEcritureComptable newSeq = new SequenceEcritureComptable();
@@ -123,6 +117,11 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
                 e.printStackTrace();
             }
         }
+
+        // 3.  Mettre à jour la référence de l'écriture avec la référence calculée (RG_Compta_5)
+        finalRef = getNewReference(pEcritureComptable.getJournal().getCode(),
+                Integer.toString(calendar.get(Calendar.YEAR)), String.format("%05d", newDerniereValeur));
+        pEcritureComptable.setReference(finalRef);
     }
 
     /**
@@ -249,6 +248,7 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
      */
     @Override
     public void updateEcritureComptable(EcritureComptable pEcritureComptable) throws FunctionalException {
+        this.checkEcritureComptable(pEcritureComptable);
         TransactionStatus vTS = getTransactionManager().beginTransactionMyERP();
         try {
             getDaoProxy().getComptabiliteDao().updateEcritureComptable(pEcritureComptable);
