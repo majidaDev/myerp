@@ -1,0 +1,25 @@
+language: java
+jdk:
+  - oraclejdk11
+
+services:
+  - docker
+
+env:
+  - DOCKER_COMPOSE_VERSION= 1.25.2
+
+before_script:
+  # Starts the containers in the background and leaves them running.
+  - docker-compose -f docker/dev/docker-compose.yml up -d
+
+script:
+  - mvn install -Ptest-business -Ptest-consumer
+  - bash <(curl -s https://codecov.io/bash)
+
+after_script:
+  # Stops running containers without removing themm
+  - docker-compose -f docker/dev/docker-compose.yml stop
+  # Removes stopped service containers
+  - docker-compose -f docker/dev/docker-compose.yml rm -f
+  # Stops containers and removes containers, networks, volumes, and images created by up
+  - docker-compose -f docker/dev/docker-compose.yml down
