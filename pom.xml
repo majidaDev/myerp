@@ -375,6 +375,10 @@
                     <artifactId>build-helper-maven-plugin</artifactId>
                     <version>1.10</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>maven-jacoco-plugin</artifactId>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>

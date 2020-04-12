@@ -81,7 +81,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
-            <version>1.10.5</version>
+            <version>1.10.19</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -94,8 +94,28 @@
         <!-- Profile utilisé pour lancer les tests d'intégration de la couche Consumer -->
         <profile>
             <id>test-consumer</id>
+
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>0.7.7.201606060606</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>report</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <!-- Ajout du répertoire src/test-consumer/java en tant que source de test du module -->
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
@@ -117,9 +137,6 @@
                     </plugin>
                 </plugins>
                 <testResources>
-                    <testResource>
-                        <directory>src/test/resources</directory>
-                    </testResource>
                     <testResource>
                         <directory>src/test-consumer/resources</directory>
                     </testResource>
