@@ -5,6 +5,9 @@ import com.dummy.myerp.model.bean.comptabilite.*;
 import com.dummy.myerp.technical.exception.FunctionalException;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -12,7 +15,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class ComptabiliteManagerImplntTest extends BusinessTestCase {
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+
+public class ComptabiliteManagerImplIntTest extends BusinessTestCase {
 
     private static ComptabiliteManager managerTestCase;
     private static EcritureComptable vEcritureComptable;
@@ -21,6 +27,9 @@ public class ComptabiliteManagerImplntTest extends BusinessTestCase {
     private static SequenceEcritureComptable sequenceEcritureComptable2;
     private static Date dateNow;
     private static Calendar calendar;
+
+    @Mock
+    public ComptabiliteManager managerMock = mock(ComptabiliteManager.class);
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -36,6 +45,7 @@ public class ComptabiliteManagerImplntTest extends BusinessTestCase {
 
     @Before
     public void setUp() {
+        //GIVEN
         vEcritureComptable = new EcritureComptable();
         sequenceEcritureComptable = new SequenceEcritureComptable("AC", 2020, 1);
         listSeqExpected.add(sequenceEcritureComptable);
@@ -55,38 +65,54 @@ public class ComptabiliteManagerImplntTest extends BusinessTestCase {
 
     /*-- UNIT TEST : addReference --*/
     @Test
+    @Transactional
     public void checkAddReferenceIfAlreadyInDB() throws Exception {
+        //GIVEN
         sequenceEcritureComptable = new SequenceEcritureComptable("AC", 2016, 40);
         listSeqExpected.add(sequenceEcritureComptable);
         vEcritureComptable.setJournal(new JournalComptable("AC", "Achat",listSeqExpected));
         Calendar calendar = Calendar.getInstance();
         calendar.set(2016, 01, 01, 10, 59, 59);
-        Date happyNewYearDate = calendar.getTime();
-        vEcritureComptable.setDate(happyNewYearDate);
+        Date newDate = calendar.getTime();
+        vEcritureComptable.setDate(newDate);
         vEcritureComptable.setReference("AC-2016/00040");
+        //WHEN
         managerTestCase.addReference(vEcritureComptable);
-
-        Assert.assertEquals(vEcritureComptable.getReference(), "AC-2016/00041");
+        //THEN
+        List<SequenceEcritureComptable> sECList = managerTestCase.getListSequenceEcritureComptable();
+        SequenceEcritureComptable sECToTest = sECList.get(sECList.size()-1);
+        int lastNumber = sECToTest.getDerniereValeur();
+        int annee = sECToTest.getAnnee();
+        Assert.assertEquals(sECToTest.getJournalCode(), "AC");
+        Assert.assertEquals(annee, 2016);
+        Assert.assertEquals(lastNumber, 41);
     }
 
-    /*-- UNIT TEST : addReference --*/
     @Test
+    @Transactional
     public void checkAddReferenceIsNotInDB() throws Exception {
-        vEcritureComptable.setJournal(new JournalComptable("AC", "Achat"));
-        vEcritureComptable.setDate(dateNow);
-        vEcritureComptable.setReference("null");
-        managerTestCase.addReference(vEcritureComptable);
-
-        Assert.assertEquals(vEcritureComptable.getReference(), "AC-2020/00001");
-        managerTestCase.deleteSequenceEcritureComptable(sequenceEcritureComptable2);
+        //GIVEN
+        EcritureComptable vEcritureComptable2 = new EcritureComptable();
+        vEcritureComptable2.setJournal(new JournalComptable("OD", "Opérations Diverses"));
+        vEcritureComptable2.setDate(dateNow);
+        //WHEN
+        managerTestCase.addReference(vEcritureComptable2);
+        //THEN
+        List<SequenceEcritureComptable> sECList = managerTestCase.getListSequenceEcritureComptable();
+        SequenceEcritureComptable sECToTest = sECList.get(sECList.size()-1);
+        int lastNumber = sECToTest.getDerniereValeur();
+        int annee = sECToTest.getAnnee();
+        Assert.assertEquals(sECToTest.getJournalCode(), "OD");
+        Assert.assertEquals(annee, 2020);
+        Assert.assertEquals(lastNumber, 1);
     }
 
     /*-- UNIT TEST : checkEcritureComptable --*/
     @Test
+    @Transactional
     public void checkEcritureComptable() throws Exception {
-
+        //GIVEN
         vEcritureComptable.setReference("AC-2020/00001");
-
         vEcritureComptable.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
                 null, new BigDecimal(123),
                 null));
@@ -97,21 +123,27 @@ public class ComptabiliteManagerImplntTest extends BusinessTestCase {
     }
 
     @Test
+    @Transactional
     public void checkEcritureComptableIfEcritureCExist() throws Exception {
+        //GIVEN
         Calendar calendar = Calendar.getInstance();
         calendar.set(2016, 01, 01, 10, 59, 59);
         Date happyNewYearDate = calendar.getTime();
         vEcritureComptable.setDate(happyNewYearDate);
         vEcritureComptable.setReference("AC-2016/00001");
+        //THEN
         expectedException.expect(FunctionalException.class);
         expectedException.expectMessage(
                 "Une autre écriture comptable existe déjà avec la même référence.");
+        //WHEN
         managerTestCase.checkEcritureComptable(vEcritureComptable);
     }
 
     /*-- UNIT TEST : insertEcritureComptable, update and delete--*/
     @Test
+    @Transactional
     public void insertEcritureComptable() throws FunctionalException {
+        //GIVEN
         EcritureComptable vEcritureComptable = new EcritureComptable();
         vEcritureComptable.setJournal(new JournalComptable("AC", "Achat"));
         vEcritureComptable.setDate(new Date());
@@ -123,21 +155,25 @@ public class ComptabiliteManagerImplntTest extends BusinessTestCase {
         vEcritureComptable.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(411),
                 null, null,
                 new BigDecimal(123)));
+        //WHEN
         managerTestCase.insertEcritureComptable(vEcritureComptable);
-
-        Assert.assertEquals(vEcritureComptable.getLibelle(), "Libelle");
-        Assert.assertEquals(vEcritureComptable.getReference(), "AC-2020/00001");
-        managerTestCase.deleteEcritureComptable(vEcritureComptable.getId());
+        //THEN
+        List<EcritureComptable> listEcritureComptableExpected = managerTestCase.getListEcritureComptable();
+        EcritureComptable ecritureComptableToTest = listEcritureComptableExpected.get(listEcritureComptableExpected.size()-1);
+        Assert.assertEquals(ecritureComptableToTest.getLibelle(), "Libelle");
+        Assert.assertEquals(ecritureComptableToTest.getReference(), "AC-2020/00001");
+        managerTestCase.deleteEcritureComptable(ecritureComptableToTest.getId());
     }
 
     @Test
+    @Transactional
     public void updateEcritureComptable() throws FunctionalException {
+        //GIVEN
         EcritureComptable vEcritureComptable = new EcritureComptable();
         vEcritureComptable.setJournal(new JournalComptable("AC", "Achat"));
         vEcritureComptable.setDate(new Date());
         vEcritureComptable.setLibelle("Libelle");
         vEcritureComptable.setReference("AC-2020/00001");
-
         vEcritureComptable.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(411),
                 null, new BigDecimal(123),
                 null));
@@ -145,68 +181,107 @@ public class ComptabiliteManagerImplntTest extends BusinessTestCase {
                 null, null,
                 new BigDecimal(123)));
         managerTestCase.insertEcritureComptable(vEcritureComptable);
-
+        //WHEN
         vEcritureComptable.setLibelle("Libelle2");
         vEcritureComptable.setReference("AC-2020/00002");
         managerTestCase.updateEcritureComptable(vEcritureComptable);
-        Assert.assertEquals(vEcritureComptable.getLibelle(), "Libelle2");
-        Assert.assertEquals(vEcritureComptable.getReference(), "AC-2020/00002");
+        //THEN
+        List<EcritureComptable> listEcritureComptableExpected = managerTestCase.getListEcritureComptable();
+        EcritureComptable ecritureComptableToTest = listEcritureComptableExpected.get(listEcritureComptableExpected.size()-1);
+        Assert.assertEquals(ecritureComptableToTest.getLibelle(), "Libelle2");
+        Assert.assertEquals(ecritureComptableToTest.getReference(), "AC-2020/00002");
         managerTestCase.deleteEcritureComptable(vEcritureComptable.getId());
     }
 
     @Test
+    @Transactional
     public void deleteEcritureComptable() throws FunctionalException {
-
+        //GIVEN
+        EcritureComptable vEcritureComptable = new EcritureComptable();
+        vEcritureComptable.setJournal(new JournalComptable("AC", "Achat"));
+        vEcritureComptable.setDate(new Date());
+        vEcritureComptable.setLibelle("Libelle");
+        vEcritureComptable.setReference("AC-2020/00001");
+        vEcritureComptable.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(411),
+                null, new BigDecimal(123),
+                null));
+        vEcritureComptable.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(411),
+                null, null,
+                new BigDecimal(123)));
+        managerTestCase.insertEcritureComptable(vEcritureComptable);
+        //WHEN
         managerTestCase.deleteEcritureComptable(vEcritureComptable.getId());
+        //THEN
+        List<EcritureComptable> listEcritureComptableExpected = managerTestCase.getListEcritureComptable();
+        EcritureComptable ecritureComptableToTest = listEcritureComptableExpected.get(listEcritureComptableExpected.size()-1);
+        Assert.assertNotEquals(ecritureComptableToTest.getLibelle(), "Libelle");
+        Assert.assertNotEquals(ecritureComptableToTest.getReference(), "AC-2020/00001");
     }
 
-    /*-- UNIT TEST : insertSequenceEcritureComptable --*/
+    /*-- UNIT TEST : insertSequenceEcritureComptable update and delete--*/
     @Test
+    @Transactional
     public void insertSequenceEcritureComptable() throws FunctionalException {
+        //GIVEN
         sequenceEcritureComptable2.setJournalCode("AC");
         sequenceEcritureComptable2.setDerniereValeur(1);
         sequenceEcritureComptable2.setAnnee(2022);
-
+        //WHEN
         managerTestCase.insertSequenceEcritureComptable(sequenceEcritureComptable2);
-        int lastNumber = sequenceEcritureComptable2.getDerniereValeur();
-        int annee = sequenceEcritureComptable2.getAnnee();
-
-        Assert.assertEquals(sequenceEcritureComptable2.getJournalCode(), "AC");
+        //THEN
+        List<SequenceEcritureComptable> listSECExpected = managerTestCase.getListSequenceEcritureComptable();
+        SequenceEcritureComptable sECExpected = listSECExpected.get(listSECExpected.size()-1);
+        int lastNumber = sECExpected.getDerniereValeur();
+        int annee = sECExpected.getAnnee();
+        Assert.assertEquals(sECExpected.getJournalCode(), "AC");
         Assert.assertEquals(lastNumber, 1);
         Assert.assertEquals(annee, 2022);
-
-        managerTestCase.deleteSequenceEcritureComptable(sequenceEcritureComptable2);
+        managerTestCase.deleteSequenceEcritureComptable(sECExpected);
     }
 
     /*-- UNIT TEST : updateSequenceEcritureComptable --*/
     @Test
+    @Transactional
     public void updateSequenceEcritureComptableTest() throws FunctionalException {
-        sequenceEcritureComptable2.setJournalCode("AC");
+        //GIVEN
+        sequenceEcritureComptable2.setJournalCode("VE");
         sequenceEcritureComptable2.setDerniereValeur(1);
         sequenceEcritureComptable2.setAnnee(2020);
         managerTestCase.insertSequenceEcritureComptable(sequenceEcritureComptable2);
-
-
+        //WHEN
         sequenceEcritureComptable2.setDerniereValeur(2);
         managerTestCase.updateSequenceEcritureComptable(sequenceEcritureComptable2);
-
-        int lastNumber = sequenceEcritureComptable2.getDerniereValeur();
-        int annee = sequenceEcritureComptable2.getAnnee();
-
-        Assert.assertEquals(sequenceEcritureComptable2.getJournalCode(), "AC");
+        //THEN
+        List<SequenceEcritureComptable> listSECExpected = managerTestCase.getListSequenceEcritureComptable();
+        SequenceEcritureComptable sECExpected = listSECExpected.get(listSECExpected.size()-1);
+        int lastNumber = sECExpected.getDerniereValeur();
+        int annee = sECExpected.getAnnee();
+        Assert.assertEquals(sECExpected.getJournalCode(), "VE");
         Assert.assertEquals(lastNumber, 2);
         Assert.assertEquals(annee, 2020);
-        managerTestCase.deleteSequenceEcritureComptable(sequenceEcritureComptable2);
+        managerTestCase.deleteSequenceEcritureComptable(sECExpected);
     }
 
     /*-- UNIT TEST : deleteSequenceEcritureComptable --*/
     @Test
+    @Transactional
     public void deleteSequenceEcritureComptable() throws FunctionalException {
+        //GIVEN
         sequenceEcritureComptable2.setJournalCode("AC");
         sequenceEcritureComptable2.setDerniereValeur(2);
         sequenceEcritureComptable2.setAnnee(2021);
-        managerTestCase.insertSequenceEcritureComptable(sequenceEcritureComptable2);
-        managerTestCase.deleteSequenceEcritureComptable(sequenceEcritureComptable2);
+        managerMock.insertSequenceEcritureComptable(sequenceEcritureComptable2);
+        //WHEN
+        managerMock.deleteSequenceEcritureComptable(sequenceEcritureComptable2);
+        //THEN
+        List<SequenceEcritureComptable> listSECExpected = managerTestCase.getListSequenceEcritureComptable();
+        SequenceEcritureComptable sECExpected = listSECExpected.get(listSECExpected.size()-1);
+        int lastNumber = sECExpected.getDerniereValeur();
+        int annee = sECExpected.getAnnee();
+        Assert.assertNotEquals(sECExpected.getJournalCode(), "AC");
+        Assert.assertNotEquals(annee, 2021);
+        Assert.assertNotEquals(lastNumber, 2);
+        Mockito.verify(managerMock, times(1)).deleteSequenceEcritureComptable(sequenceEcritureComptable2);
     }
 
 }

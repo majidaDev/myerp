@@ -38,6 +38,13 @@ public interface ComptabiliteManager {
     List<EcritureComptable> getListEcritureComptable();
 
     /**
+     * Renvoie la liste des sequences écriture comptable.
+     *
+     * @return {@link List}
+     */
+    List<SequenceEcritureComptable> getListSequenceEcritureComptable();
+
+    /**
      * Ajoute une référence à l'écriture comptable.
      *
      * <strong>RG_Compta_5 : </strong>

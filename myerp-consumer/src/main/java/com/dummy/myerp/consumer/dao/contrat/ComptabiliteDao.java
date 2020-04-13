@@ -81,6 +81,7 @@ public interface ComptabiliteDao {
      * @param pId l'id de l'écriture
      */
     void deleteEcritureComptable(Integer pId);
+
     /**
      * Insert une nouvelle sequence écriture comptable.
      *
@@ -95,11 +96,16 @@ public interface ComptabiliteDao {
      */
     void updateSequenceEcritureComptable(SequenceEcritureComptable pSequenceEcritureComptable);
 
-
     /**
      * Supprime la sequence écriture comptable d'id {@code pId}.
      *
      * @param pSequenceEcritureComptable -
      */
     void deleteSequenceEcritureComptable(SequenceEcritureComptable pSequenceEcritureComptable);
+
+    /**
+     * Renvoie la liste des Sequences Ecriture Comptable
+     * @return {@link List}
+     */
+    List<SequenceEcritureComptable> getListSequenceEcritureComptable();
 }
