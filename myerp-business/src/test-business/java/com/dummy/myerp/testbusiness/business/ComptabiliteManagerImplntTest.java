@@ -12,7 +12,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class ComptabiliteManagerImplTestInt extends BusinessTestCase {
+public class ComptabiliteManagerImplntTest extends BusinessTestCase {
 
     private static ComptabiliteManager managerTestCase;
     private static EcritureComptable vEcritureComptable;
@@ -165,7 +165,7 @@ public class ComptabiliteManagerImplTestInt extends BusinessTestCase {
     public void insertSequenceEcritureComptable() throws FunctionalException {
         sequenceEcritureComptable2.setJournalCode("AC");
         sequenceEcritureComptable2.setDerniereValeur(1);
-        sequenceEcritureComptable2.setAnnee(2020);
+        sequenceEcritureComptable2.setAnnee(2022);
 
         managerTestCase.insertSequenceEcritureComptable(sequenceEcritureComptable2);
         int lastNumber = sequenceEcritureComptable2.getDerniereValeur();
@@ -173,7 +173,7 @@ public class ComptabiliteManagerImplTestInt extends BusinessTestCase {
 
         Assert.assertEquals(sequenceEcritureComptable2.getJournalCode(), "AC");
         Assert.assertEquals(lastNumber, 1);
-        Assert.assertEquals(annee, 2020);
+        Assert.assertEquals(annee, 2022);
 
         managerTestCase.deleteSequenceEcritureComptable(sequenceEcritureComptable2);
     }
@@ -204,7 +204,7 @@ public class ComptabiliteManagerImplTestInt extends BusinessTestCase {
     public void deleteSequenceEcritureComptable() throws FunctionalException {
         sequenceEcritureComptable2.setJournalCode("AC");
         sequenceEcritureComptable2.setDerniereValeur(2);
-        sequenceEcritureComptable2.setAnnee(2020);
+        sequenceEcritureComptable2.setAnnee(2021);
         managerTestCase.insertSequenceEcritureComptable(sequenceEcritureComptable2);
         managerTestCase.deleteSequenceEcritureComptable(sequenceEcritureComptable2);
     }
