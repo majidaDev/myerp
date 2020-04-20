@@ -26,7 +26,7 @@ public class ComptabiliteManagerImplTest {
     private static SequenceEcritureComptable sequenceEcritureComptable2;
     private static Date dateNow;
     private static Calendar calendar;
-
+// Mockito est pour nous assurer que on va tester cette class service independament de la class Comptabilite Manager (principe FIRST, I Indépedant )
     @Mock
     public ComptabiliteManagerImpl managerMock = mock(ComptabiliteManagerImpl.class);
 
@@ -43,7 +43,7 @@ public class ComptabiliteManagerImplTest {
 
     @Before
     public void setUp() {
-        //GIVEN
+        //GIVEN/ARRANGE
         vEcritureComptable = new EcritureComptable();
         sequenceEcritureComptable = new SequenceEcritureComptable("AC", 2020, 1);
         listSeqExpected.add(sequenceEcritureComptable);
@@ -71,10 +71,12 @@ public class ComptabiliteManagerImplTest {
         vEcritureComptable.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(2),
                 null, null,
                 new BigDecimal(123)));
-        //WHEN
+        //WHEN/ACT
         managerMock.checkEcritureComptableUnit(vEcritureComptable);
-        //THEN
+        //THEN/ASSERT
         Mockito.verify(managerMock, times(1)).checkEcritureComptableUnit(vEcritureComptable);
+
+        // sur verify on peut spécifier le nombre de fois que la méthode a été appelée avec times (1)
 
     }
 
