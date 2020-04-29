@@ -10,7 +10,7 @@ env:
 
 before_script:
   # Starts the containers in the background and leaves them running.
-  - docker-compose -f docker/dev/docker-compose.yml up -d
+  - docker-compose -f dev/docker-compose.yml up -d
 
 script:
   - mvn install -Ptest-business -Ptest-consumer
@@ -18,8 +18,8 @@ script:
 
 after_script:
   # Stops running containers without removing themm
-  - docker-compose -f docker/dev/docker-compose.yml stop
+  - docker-compose -f dev/docker-compose.yml stop
   # Removes stopped service containers
-  - docker-compose -f docker/dev/docker-compose.yml rm -f
+  - docker-compose -f dev/docker-compose.yml rm -f
   # Stops containers and removes containers, networks, volumes, and images created by up
-  - docker-compose -f docker/dev/docker-compose.yml down
+  - docker-compose -f dev/docker-compose.yml down
