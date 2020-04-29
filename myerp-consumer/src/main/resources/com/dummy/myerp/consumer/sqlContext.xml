@@ -58,7 +58,7 @@
         <property name="SQLinsertListLigneEcritureComptable">
             <value>
                 INSERT INTO myerp.ligne_ecriture_comptable (
-                <!-- ajout virgule après débit -->
+                <!-- ajout une  virgule après débit -->
                 ecriture_id, ligne_id, compte_comptable_numero, libelle, debit,
                     credit
                 ) VALUES (
