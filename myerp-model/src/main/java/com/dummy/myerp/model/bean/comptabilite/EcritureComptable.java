@@ -114,7 +114,7 @@ public class EcritureComptable {
      * @return boolean
      */
     public boolean isEquilibree() {
-        //add compareTo for BigDecimal and not Equals
+        // change not Equals with compareTo
        int  vRetourBigDecimal = this.getTotalDebit().compareTo(getTotalCredit());
         boolean vRetour = vRetourBigDecimal == 0;
         return vRetour;

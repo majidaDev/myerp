@@ -37,7 +37,7 @@ public class ComptabiliteManagerImplIntTest extends BusinessTestCase {
 
     @BeforeClass
     public static void setUpBC() {
-        managerTestCase = getBusinessProxy().getComptabiliteManager(); // on appel BusinessProxy qui va faire appel à BusinessProxy qui lui va faire appel à BusinessProxyIMPL dans applicationContext pour nous retourner comptabiliteManager
+        managerTestCase = getBusinessProxy().getComptabiliteManager(); // on appel BusinessProxy qui va faire appel à BusinessProxy dans application context qui lui va faire appel à BusinessProxyIMPL pour nous retourner comptabiliteManager
         dateNow = new Date();
         calendar = Calendar.getInstance();
         calendar.setTime(dateNow);
@@ -263,6 +263,7 @@ public class ComptabiliteManagerImplIntTest extends BusinessTestCase {
     }
 
     /*-- UNIT TEST : deleteSequenceEcritureComptable --*/
+    // Mock pour verifier si j bien appéle la méthode deleteSequence
     @Test
     @Transactional
     public void deleteSequenceEcritureComptable() throws FunctionalException {

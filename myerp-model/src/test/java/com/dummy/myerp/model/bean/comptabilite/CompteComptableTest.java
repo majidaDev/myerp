@@ -13,8 +13,8 @@ import java.util.List;
 public class CompteComptableTest {
 
     private List<CompteComptable> pList;
-    private CompteComptable compteComptableExpected;
-    private CompteComptable compteComptableToTest;
+    private CompteComptable compteComptableExpected; //
+    private CompteComptable compteComptableToTest;//
 
     @Before
     public void setUp() {

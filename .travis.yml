@@ -17,7 +17,7 @@ script:
   - bash <(curl -s https://codecov.io/bash)
 
 after_script:
-  # Stops running containers without removing themm
+  # Stops running containers without removing them
   - docker-compose -f dev/docker-compose.yml stop
   # Removes stopped service containers
   - docker-compose -f dev/docker-compose.yml rm -f
