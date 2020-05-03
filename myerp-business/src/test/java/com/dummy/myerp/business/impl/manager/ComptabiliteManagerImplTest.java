@@ -71,7 +71,7 @@ public class ComptabiliteManagerImplTest {
         vEcritureComptable.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(2),
                 null, null,
                 new BigDecimal(123)));
-        //WHEN/ACT
+        //WHEN/ACTT
         managerMock.checkEcritureComptableUnit(vEcritureComptable);
         //THEN/ASSERT
         Mockito.verify(managerMock, times(1)).checkEcritureComptableUnit(vEcritureComptable);
