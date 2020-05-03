@@ -19,7 +19,7 @@ script:
 after_script:
   # Stops running containers without removing them
   - docker-compose -f dev/docker-compose.yml stop
-  # Removes stopped service containers
+  # Removes stopped service containers and
   - docker-compose -f dev/docker-compose.yml rm -f
   # Stops containers and removes containers, networks, volumes, and images created by up
   - docker-compose -f dev/docker-compose.yml down
